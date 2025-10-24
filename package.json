@@ -1,0 +1,22 @@
+{
+  "name": "browser-games-collection",
+  "version": "2.0.0",
+  "description": "Collection of browser-based games built with React, TypeScript, and Vite",
+  "private": true,
+  "scripts": {
+    "dev:chess": "cd chess && npm run dev",
+    "dev:tic-tac-toe": "cd tic-tac-toe && npm run dev",
+    "dev:snake": "cd snake && npm run dev",
+    "build:chess": "cd chess && npm run build",
+    "build:tic-tac-toe": "cd tic-tac-toe && npm run build",
+    "build:snake": "cd snake && npm run build",
+    "build:all": "npm run build:chess && npm run build:tic-tac-toe && npm run build:snake",
+    "lint:chess": "cd chess && npm run lint",
+    "lint:tic-tac-toe": "cd tic-tac-toe && npm run lint",
+    "lint:snake": "cd snake && npm run lint",
+    "lint:all": "npm run lint:chess && npm run lint:tic-tac-toe && npm run lint:snake"
+  },
+  "keywords": ["games", "chess", "tic-tac-toe", "snake", "react", "typescript", "vite"],
+  "author": "",
+  "license": "ISC"
+}
