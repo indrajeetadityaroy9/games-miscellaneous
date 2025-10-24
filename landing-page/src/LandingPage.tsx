@@ -27,6 +27,12 @@ const games: GameCard[] = [
     path: '/snake',
     icon: '🐍',
   },
+  {
+    id: 'space-invaders',
+    title: 'Space Invaders',
+    path: '/space-invaders',
+    icon: '👾',
+  },
 ];
 
 function LandingPage() {

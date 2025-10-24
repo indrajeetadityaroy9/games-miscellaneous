@@ -27,7 +27,7 @@ function ChessBoard() {
   const getPieceImage = (piece: { type: PieceSymbol; color: Color }) => {
     const color = piece.color === 'w' ? 'w' : 'b';
     const type = piece.type.toUpperCase();
-    return `/images/pieces/${color}${type}.png`;
+    return `${import.meta.env.BASE_URL}images/pieces/${color}${type}.png`;
   };
 
   const getCapturedPieces = () => {

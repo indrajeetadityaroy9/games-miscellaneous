@@ -8,7 +8,7 @@
   transition: background-color 0.3s ease;
 }
 
-/* Dark mode styles */
+
 .snake-game.dark {
   background-color: #1a1a1a;
 }
@@ -27,7 +27,7 @@
   color: #999;
 }
 
-/* Light mode styles */
+
 .snake-game.light {
   background-color: #f5f5f5;
 }
@@ -46,7 +46,7 @@
   color: #666;
 }
 
-/* Common styles */
+
 canvas {
   border-radius: 8px;
 }

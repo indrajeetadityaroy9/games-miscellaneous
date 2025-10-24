@@ -8,7 +8,7 @@
   transition: background-color 0.3s ease;
 }
 
-/* Dark mode styles */
+
 .tic-tac-toe.dark {
   background-color: #1a1a1a;
 }
@@ -53,7 +53,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Light mode styles */
+
 .tic-tac-toe.light {
   background-color: #f5f5f5;
 }
@@ -99,7 +99,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Common styles */
+
 .game-header {
   display: flex;
   align-items: center;
@@ -215,7 +215,7 @@ td {
   transform: translateY(0);
 }
 
-/* Responsive design */
+
 @media (max-width: 768px) {
   .game-title {
     font-size: 32px;
