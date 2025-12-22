@@ -1,0 +1,43 @@
+/* Terminal Snake Stylesheet */
+
+Screen {
+    align: center middle;
+    background: $background;
+}
+
+/* Main game container */
+#game-container {
+    width: auto;
+    height: auto;
+    align: center middle;
+    border: round $primary;
+    padding: 1;
+    background: $surface;
+}
+
+/* HUD styling */
+HUD {
+    dock: top;
+    height: 3;
+    width: 100%;
+    background: $surface;
+    border-bottom: solid $primary-darken-2;
+    padding: 0 1;
+}
+
+HUD Static {
+    background: transparent;
+}
+
+/* Game board */
+GameBoard {
+    width: auto;
+    height: auto;
+    margin: 1 0;
+    background: transparent;
+}
+
+/* Footer help text */
+Footer {
+    height: 1;
+}

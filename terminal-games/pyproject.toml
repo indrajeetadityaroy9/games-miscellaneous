@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "terminal-games"
+version = "1.0.0"
+description = "Collection of terminal-based games: Chess, Snake, Tetris, Tic-Tac-Toe, Space Invaders"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "textual>=0.47.0",
+    "rich>=13.0.0",
+    "python-chess>=1.10.0",
+]
+
+[project.scripts]
+terminal-games = "terminal_games.launcher:main"
+tg-chess = "terminal_games.chess.app:main"
+tg-snake = "terminal_games.snake.app:main"
+tg-tetris = "terminal_games.tetris.app:main"
+tg-tictactoe = "terminal_games.tictactoe.app:main"
+tg-spaceinvaders = "terminal_games.spaceinvaders.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.tcss"]
