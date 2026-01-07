@@ -7,9 +7,7 @@ Description-Content-Type: text/markdown
 Requires-Dist: textual>=0.47.0
 Requires-Dist: rich>=13.0.0
 Requires-Dist: python-chess>=1.10.0
-Provides-Extra: rl
-Requires-Dist: torch>=2.0.0; extra == "rl"
-Requires-Dist: torchrl>=0.6.0; extra == "rl"
-Requires-Dist: tensordict>=0.6.0; extra == "rl"
-Requires-Dist: numpy>=1.24.0; extra == "rl"
-Requires-Dist: gymnasium>=0.29.0; extra == "rl"
+
+# Terminal Games
+
+A collection of classic terminal-based games built with [Textual](https://textual.textualize.io/), featuring TUI interfaces.

@@ -1,16 +1,11 @@
-"""Game board widget for Tic-Tac-Toe."""
-
 from rich.segment import Segment
 from rich.style import Style
 from textual.strip import Strip
 from textual.widget import Widget
-
 from ..models import Board, Player
 
 
 class GameBoard(Widget):
-    """3x3 Tic-Tac-Toe grid with cursor navigation."""
-
     DEFAULT_CSS = """
     GameBoard {
         width: auto;
@@ -18,36 +13,26 @@ class GameBoard(Widget):
     }
     """
 
-    # Layout:
-    # y=0: ┌─────┬─────┬─────┐
-    # y=1: │     │     │     │  (row 0, line 0)
-    # y=2: │  X  │  O  │     │  (row 0, line 1 - content)
-    # y=3: │     │     │     │  (row 0, line 2)
-    # y=4: ├─────┼─────┼─────┤
-    # y=5: │     │     │     │  (row 1, line 0)
-    # y=6: │     │[ ]  │     │  (row 1, line 1 - content)
-    # y=7: │     │     │     │  (row 1, line 2)
-    # y=8: ├─────┼─────┼─────┤
-    # y=9: │     │     │     │  (row 2, line 0)
-    # y=10: │  O  │     │  X  │  (row 2, line 1 - content)
-    # y=11: │     │     │     │  (row 2, line 2)
-    # y=12: └─────┴─────┴─────┘
-
-    TOTAL_HEIGHT = 13
-    CELL_WIDTH = 5
-
     def __init__(
         self,
         *,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
+        cell_width: int = 11,
+        cell_height: int = 5,
     ) -> None:
         super().__init__(name=name, id=id, classes=classes)
+        self.CELL_WIDTH = cell_width
+        self.CELL_HEIGHT = cell_height
+        self.TOTAL_HEIGHT = self.CELL_HEIGHT * 3 + 4
+        
         self._board: Board = list(range(9))
         self._cursor_position: int = 4
         self._winning_cells: tuple[int, ...] = ()
         self._is_game_over: bool = False
+        self._styles: dict[str, Style] = {}
+        self._last_theme: str | None = None
 
     def update_state(
         self,
@@ -56,7 +41,6 @@ class GameBoard(Widget):
         winning_cells: tuple[int, ...],
         is_game_over: bool,
     ) -> None:
-        """Update the board state and trigger a refresh."""
         self._board = board
         self._cursor_position = cursor_position
         self._winning_cells = winning_cells
@@ -64,72 +48,87 @@ class GameBoard(Widget):
         self.refresh()
 
     def get_content_width(self, container, viewport):
-        """Return the width of the board."""
-        # │ + 5*3 cells + 2 inner │ + │ = 1 + 15 + 2 + 1 = 19
-        return 19
+        return 3 * self.CELL_WIDTH + 4
 
     def get_content_height(self, container, viewport, width):
-        """Return the height of the board."""
         return self.TOTAL_HEIGHT
 
-    def _get_styles(self):
-        """Get theme-aware styles."""
-        is_dark = self.app.theme == "textual-dark"
+    def _refresh_styles(self) -> None:
+        current_theme = getattr(self.app, "theme", "textual-dark")
+        if self._styles and self._last_theme == current_theme:
+            return
+
+        self._last_theme = current_theme
+        is_dark = current_theme == "textual-dark"
 
         if is_dark:
-            return {
+            colors = {
                 "bg": "#0a0a0a",
                 "border": "#555555",
                 "x": "#00d4ff",
                 "o": "#ff69b4",
-                "cursor": "#ffff00",
+                "cursor_bg": "#444400",
                 "win_bg": "#2d5a2d",
             }
         else:
-            return {
+            colors = {
                 "bg": "#f5f5f5",
                 "border": "#666666",
                 "x": "#0066cc",
                 "o": "#cc0066",
-                "cursor": "#cc8800",
+                "cursor_bg": "#ffddaa",
                 "win_bg": "#90ee90",
             }
 
+        bg_color = colors["bg"]
+        self._styles = {
+            "border": Style(color=colors["border"], bgcolor=bg_color),
+            "bg": Style(bgcolor=bg_color),
+            "cursor": Style(bgcolor=colors["cursor_bg"]),
+            "win": Style(bgcolor=colors["win_bg"]),
+            "x": Style(color=colors["x"], bgcolor=bg_color, bold=True),
+            "o": Style(color=colors["o"], bgcolor=bg_color, bold=True),
+            "x_cursor": Style(color=colors["x"], bgcolor=colors["cursor_bg"], bold=True),
+            "o_cursor": Style(color=colors["o"], bgcolor=colors["cursor_bg"], bold=True),
+            "x_win": Style(color=colors["x"], bgcolor=colors["win_bg"], bold=True),
+            "o_win": Style(color=colors["o"], bgcolor=colors["win_bg"], bold=True),
+        }
+
     def render_line(self, y: int) -> Strip:
-        """Render a single line of the game board."""
-        colors = self._get_styles()
-        style_border = Style(color=colors["border"], bgcolor=colors["bg"])
+        self._refresh_styles()
+        styles = self._styles
+        style_border = styles["border"]
+        
+        cw = self.CELL_WIDTH
+        h_line = "─" * cw
+        
+        # Border rows
+        row_1_bottom = 1 + self.CELL_HEIGHT
+        row_2_bottom = row_1_bottom + 1 + self.CELL_HEIGHT
+        total_height = self.TOTAL_HEIGHT
 
         segments = []
-
-        # Top border
         if y == 0:
             segments = [
-                Segment("┌─────┬─────┬─────┐", style_border)
+                Segment(f"┌{h_line}┬{h_line}┬{h_line}┐", style_border)
             ]
             return Strip(segments)
-
-        # Bottom border
-        if y == 12:
+        if y == total_height - 1:
             segments = [
-                Segment("└─────┴─────┴─────┘", style_border)
+                Segment(f"└{h_line}┴{h_line}┴{h_line}┘", style_border)
             ]
             return Strip(segments)
-
-        # Horizontal dividers
-        if y == 4 or y == 8:
+        if y == row_1_bottom or y == row_2_bottom:
             segments = [
-                Segment("├─────┼─────┼─────┤", style_border)
+                Segment(f"├{h_line}┼{h_line}┼{h_line}┤", style_border)
             ]
             return Strip(segments)
 
-        # Cell content rows
         row_info = self._get_row_info(y)
         if row_info is None:
             return Strip([])
 
         cell_row, line_in_cell = row_info
-
         segments.append(Segment("│", style_border))
 
         for col in range(3):
@@ -138,19 +137,52 @@ class GameBoard(Widget):
             is_cursor = cell_index == self._cursor_position
             is_winning = cell_index in self._winning_cells
 
-            # Cell background
-            cell_bg = colors["win_bg"] if is_winning else colors["bg"]
-
-            # Render cell content (5 chars wide)
-            if line_in_cell == 1:  # Middle line - show content
-                cell_content = self._render_cell_content(
-                    cell_value, is_cursor, is_winning, colors, cell_bg
-                )
+            # Determine background style
+            if is_winning:
+                bg_style = styles["win"]
+            elif is_cursor:
+                bg_style = styles["cursor"]
             else:
-                # Top or bottom line - empty
-                cell_content = [Segment("     ", Style(bgcolor=cell_bg))]
+                bg_style = styles["bg"]
+            
+            # Content padding
+            pad_len = (self.CELL_WIDTH - 1) // 2
+            padding = " " * pad_len
+            empty_cell = " " * self.CELL_WIDTH
 
-            segments.extend(cell_content)
+            # Center vertically
+            if line_in_cell == self.CELL_HEIGHT // 2:
+                # Center line content (X or O or empty)
+                if cell_value == Player.X:
+                    if is_winning:
+                        content_style = styles["x_win"]
+                    elif is_cursor:
+                        content_style = styles["x_cursor"]
+                    else:
+                        content_style = styles["x"]
+                    segments.extend([
+                        Segment(padding, bg_style),
+                        Segment("X", content_style),
+                        Segment(padding, bg_style),
+                    ])
+                elif cell_value == Player.O:
+                    if is_winning:
+                        content_style = styles["o_win"]
+                    elif is_cursor:
+                        content_style = styles["o_cursor"]
+                    else:
+                        content_style = styles["o"]
+                    segments.extend([
+                        Segment(padding, bg_style),
+                        Segment("O", content_style),
+                        Segment(padding, bg_style),
+                    ])
+                else:
+                    # Empty
+                    segments.append(Segment(empty_cell, bg_style))
+            else:
+                # Top/Bottom lines of the cell
+                segments.append(Segment(empty_cell, bg_style))
 
             if col < 2:
                 segments.append(Segment("│", style_border))
@@ -158,70 +190,23 @@ class GameBoard(Widget):
         segments.append(Segment("│", style_border))
         return Strip(segments)
 
-    def _render_cell_content(
-        self, cell_value, is_cursor: bool, is_winning: bool, colors: dict, cell_bg: str
-    ) -> list[Segment]:
-        """Render the content of a single cell (5 chars wide)."""
-        bg_style = Style(bgcolor=cell_bg)
-        cursor_style = Style(color=colors["cursor"], bgcolor=cell_bg, bold=True)
-
-        if isinstance(cell_value, int):
-            # Empty cell
-            if is_cursor:
-                return [
-                    Segment(" ", bg_style),
-                    Segment("[", cursor_style),
-                    Segment(" ", bg_style),
-                    Segment("]", cursor_style),
-                    Segment(" ", bg_style),
-                ]
-            else:
-                return [Segment("     ", bg_style)]
-        elif cell_value == Player.X:
-            x_style = Style(color=colors["x"], bgcolor=cell_bg, bold=True)
-            if is_cursor:
-                return [
-                    Segment(" ", bg_style),
-                    Segment("[", cursor_style),
-                    Segment("X", x_style),
-                    Segment("]", cursor_style),
-                    Segment(" ", bg_style),
-                ]
-            return [
-                Segment("  ", bg_style),
-                Segment("X", x_style),
-                Segment("  ", bg_style),
-            ]
-        else:  # Player.O
-            o_style = Style(color=colors["o"], bgcolor=cell_bg, bold=True)
-            if is_cursor:
-                return [
-                    Segment(" ", bg_style),
-                    Segment("[", cursor_style),
-                    Segment("O", o_style),
-                    Segment("]", cursor_style),
-                    Segment(" ", bg_style),
-                ]
-            return [
-                Segment("  ", bg_style),
-                Segment("O", o_style),
-                Segment("  ", bg_style),
-            ]
-
     def _get_row_info(self, y: int) -> tuple[int, int] | None:
-        """
-        Get cell row and line within cell for a given y coordinate.
-        Returns (cell_row, line_in_cell) or None if y is a border/divider.
+        # Row 0: 1 to CELL_HEIGHT
+        row_0_start = 1
+        row_0_end = row_0_start + self.CELL_HEIGHT
+        
+        # Row 1: row_0_end + 1 to row_0_end + 1 + CELL_HEIGHT
+        row_1_start = row_0_end + 1
+        row_1_end = row_1_start + self.CELL_HEIGHT
+        
+        # Row 2: row_1_end + 1 to row_1_end + 1 + CELL_HEIGHT
+        row_2_start = row_1_end + 1
+        row_2_end = row_2_start + self.CELL_HEIGHT
 
-        Layout:
-        y=1,2,3 -> row 0, lines 0,1,2
-        y=5,6,7 -> row 1, lines 0,1,2
-        y=9,10,11 -> row 2, lines 0,1,2
-        """
-        if 1 <= y <= 3:
-            return (0, y - 1)
-        elif 5 <= y <= 7:
-            return (1, y - 5)
-        elif 9 <= y <= 11:
-            return (2, y - 9)
+        if row_0_start <= y < row_0_end:
+            return (0, y - row_0_start)
+        elif row_1_start <= y < row_1_end:
+            return (1, y - row_1_start)
+        elif row_2_start <= y < row_2_end:
+            return (2, y - row_2_start)
         return None

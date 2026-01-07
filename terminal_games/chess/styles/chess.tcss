@@ -1,18 +1,12 @@
-/* Terminal Chess Stylesheet */
-
 Screen {
-    align: center middle;
+    align: center top;
     background: $background;
 }
-
-/* Main game container */
 #game-container {
     width: auto;
     height: auto;
-    align: center middle;
+    align: center top;
 }
-
-/* Board container */
 #board-container {
     width: auto;
     height: auto;
@@ -20,15 +14,11 @@ Screen {
     padding: 1;
     background: $surface;
 }
-
-/* Chess board widget */
 ChessBoard {
     width: auto;
     height: auto;
     background: transparent;
 }
-
-/* Sidebar container */
 #sidebar-container {
     width: 30;
     height: 100%;
@@ -38,8 +28,6 @@ ChessBoard {
     padding: 1;
     background: $surface;
 }
-
-/* Sidebar widget */
 #sidebar {
     width: 100%;
     height: 100%;
@@ -47,8 +35,6 @@ ChessBoard {
     background: transparent;
     color: $text;
 }
-
-/* Footer help text */
 Footer {
     height: 1;
 }

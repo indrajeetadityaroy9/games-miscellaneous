@@ -1,35 +1,44 @@
-"""HUD widget for displaying Space Invaders game status."""
-
 from textual.widget import Widget
+from textual.containers import Vertical
 from textual.reactive import reactive
-from textual.widgets import Static
+from textual.widgets import Static, Digits, Label
 
 
 class HUD(Widget):
-    """Heads-up display showing score, level, and status."""
-
     DEFAULT_CSS = """
     HUD {
         width: 100%;
-        height: 3;
+        height: 5;
         layout: horizontal;
+        padding: 0 1;
     }
 
     HUD .hud-stat {
         width: auto;
-        padding: 0 2;
-        text-style: bold;
-        content-align: center middle;
+        height: auto;
+        margin-right: 2;
+        align-horizontal: center;
+    }
+
+    HUD Label {
+        text-align: center;
+        width: 100%;
+        color: $text-muted;
+    }
+
+    HUD Digits {
+        width: auto;
+        min-width: 10;
+        text-align: center;
     }
 
     HUD .status-display {
         width: 1fr;
-        padding: 0 2;
-        content-align: center middle;
+        content-align: right middle;
+        padding-right: 2;
     }
     """
 
-    # Reactive properties
     level: reactive[int] = reactive(1)
     score: reactive[int] = reactive(0)
     high_score: reactive[int] = reactive(0)
@@ -38,14 +47,24 @@ class HUD(Widget):
     is_won: reactive[bool] = reactive(False)
 
     def compose(self):
-        """Build HUD layout."""
-        yield Static(id="score-display", classes="hud-stat")
+        yield Vertical(
+            Label("SCORE"),
+            Digits(id="score-digits"),
+            classes="hud-stat"
+        )
+        yield Vertical(
+            Label("HIGH SCORE"),
+            Digits(id="high-score-digits"),
+            classes="hud-stat"
+        )
+        yield Vertical(
+            Label("LEVEL"),
+            Digits(id="level-digits"),
+            classes="hud-stat"
+        )
         yield Static(id="status-display", classes="status-display")
-        yield Static(id="level-display", classes="hud-stat")
-        yield Static(id="high-score-display", classes="hud-stat")
 
     def on_mount(self) -> None:
-        """Initialize displays on mount."""
         self._update_score_display()
         self._update_level_display()
         self._update_high_score_display()
@@ -60,7 +79,6 @@ class HUD(Widget):
         is_game_over: bool,
         is_won: bool,
     ) -> None:
-        """Update all HUD values."""
         self.level = level
         self.score = score
         self.high_score = high_score
@@ -88,22 +106,19 @@ class HUD(Widget):
 
     def _update_score_display(self) -> None:
         try:
-            display = self.query_one("#score-display", Static)
-            display.update(f"[dim]SCORE[/] {self.score:05d}")
+            self.query_one("#score-digits", Digits).update(f"{self.score:05d}")
         except Exception:
             pass
 
     def _update_level_display(self) -> None:
         try:
-            display = self.query_one("#level-display", Static)
-            display.update(f"[dim]LVL[/] {self.level}")
+            self.query_one("#level-digits", Digits).update(f"{self.level}")
         except Exception:
             pass
 
     def _update_high_score_display(self) -> None:
         try:
-            display = self.query_one("#high-score-display", Static)
-            display.update(f"[dim]HI[/] {self.high_score:05d}")
+            self.query_one("#high-score-digits", Digits).update(f"{self.high_score:05d}")
         except Exception:
             pass
 
@@ -111,14 +126,14 @@ class HUD(Widget):
         try:
             display = self.query_one("#status-display", Static)
             if self.is_game_over:
-                display.update("[bold red]GAME OVER[/] [dim]Press R to restart[/]")
+                display.update("[bold red]GAME OVER[/]\n[dim]Press R to restart[/]")
             elif self.is_won:
                 if self.level >= 8:
-                    display.update("[bold green]YOU WIN![/] [dim]Press R to play again[/]")
+                    display.update("[bold green]YOU WIN![/]\n[dim]Press R to play again[/]")
                 else:
-                    display.update("[bold green]STAGE CLEAR![/] [dim]Press R for next level[/]")
+                    display.update("[bold green]STAGE CLEAR![/]\n[dim]Press R for next level[/]")
             elif self.is_paused:
-                display.update("[bold yellow]PAUSED[/] [dim]Press P to resume[/]")
+                display.update("[bold yellow]PAUSED[/]\n[dim]Press P to resume[/]")
             else:
                 display.update("")
         except Exception:

@@ -1,12 +1,4 @@
-"""Tetromino piece definitions for Terminal Tetris."""
-
 from .models import Tetromino
-
-# All 7 standard Tetris pieces
-# Shape matrices use the piece's color ID (1-7) for filled cells, 0 for empty
-# Shapes are defined in their spawn orientation
-
-# I-piece (cyan) - horizontal bar
 I_PIECE = Tetromino(
     shape=(
         (0, 0, 0, 0),
@@ -16,8 +8,6 @@ I_PIECE = Tetromino(
     ),
     color=1,
 )
-
-# J-piece (blue) - J shape
 J_PIECE = Tetromino(
     shape=(
         (2, 0, 0),
@@ -26,8 +16,6 @@ J_PIECE = Tetromino(
     ),
     color=2,
 )
-
-# L-piece (orange) - L shape
 L_PIECE = Tetromino(
     shape=(
         (0, 0, 3),
@@ -36,8 +24,6 @@ L_PIECE = Tetromino(
     ),
     color=3,
 )
-
-# O-piece (yellow) - square
 O_PIECE = Tetromino(
     shape=(
         (4, 4),
@@ -45,8 +31,6 @@ O_PIECE = Tetromino(
     ),
     color=4,
 )
-
-# S-piece (green) - S shape
 S_PIECE = Tetromino(
     shape=(
         (0, 5, 5),
@@ -55,8 +39,6 @@ S_PIECE = Tetromino(
     ),
     color=5,
 )
-
-# T-piece (purple) - T shape
 T_PIECE = Tetromino(
     shape=(
         (0, 6, 0),
@@ -65,8 +47,6 @@ T_PIECE = Tetromino(
     ),
     color=6,
 )
-
-# Z-piece (red) - Z shape
 Z_PIECE = Tetromino(
     shape=(
         (7, 7, 0),
@@ -75,23 +55,17 @@ Z_PIECE = Tetromino(
     ),
     color=7,
 )
-
-# List of all pieces for random selection
 ALL_PIECES = [I_PIECE, J_PIECE, L_PIECE, O_PIECE, S_PIECE, T_PIECE, Z_PIECE]
-
-# Color names for each piece type (used for rendering)
 PIECE_COLORS = {
-    0: "default",    # Empty
-    1: "cyan",       # I
-    2: "blue",       # J
-    3: "orange1",    # L
-    4: "yellow",     # O
-    5: "green",      # S
-    6: "magenta",    # T
-    7: "red",        # Z
+    0: "default",    
+    1: "cyan",       
+    2: "blue",       
+    3: "orange1",    
+    4: "yellow",     
+    5: "green",      
+    6: "magenta",    
+    7: "red",        
 }
-
-# Light theme colors
 PIECE_COLORS_LIGHT = {
     0: "default",
     1: "dark_cyan",
